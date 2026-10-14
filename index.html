@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>SCAD ITGM at SIEGE 2026</title>
+<style>
+@font-face{font-family:"Archivo";src:url(fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+:root{
+  --paper:#E9EAE6;
+  --ink:#121416;
+  --mute:#5F6468;
+  --rule:#C9CBC6;
+  --signal:#E3301F;
+  --black:#0B0C0D;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--black);color:var(--ink);font-family:"Archivo","Archivo Narrow","Arial Narrow",Arial,sans-serif;font-stretch:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0;}
+.slide{position:absolute;inset:0;background:var(--paper);display:none;padding:96px 112px;overflow:hidden}
+.slide.on{display:block}
+.slide.dark{background:var(--black);color:var(--paper)}
+
+/* type scale */
+h1,h2,h3,p{margin:0;font-weight:400}
+.display{font-stretch:62%;font-weight:800;line-height:.86;letter-spacing:-.01em}
+.t1{font-size:250px}
+.t2{font-size:200px}
+.t3{font-size:120px}
+.t4{font-size:72px;font-stretch:75%;font-weight:700;line-height:.95}
+.lead{font-size:44px;line-height:1.2;font-weight:400}
+.body{font-size:30px;line-height:1.3}
+.small{font-size:24px;line-height:1.3;color:var(--mute)}
+.dark .small{color:#A7ABA8}
+
+/* full-bleed image slides */
+.bleed{padding:0}
+.bleed img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bleed .cap{position:absolute;left:0;right:0;bottom:0;padding:28px 112px 36px;background:linear-gradient(transparent,rgba(0,0,0,.78));color:var(--paper);display:flex;justify-content:space-between;align-items:baseline;gap:40px}
+.cap b{font-stretch:75%;font-weight:700;font-size:44px}
+.cap span{font-size:26px;color:#C9CCC8}
+
+/* grids */
+.cols{display:grid;gap:48px}
+.c2{grid-template-columns:1fr 1fr}
+.img{width:100%;height:100%;object-fit:cover;display:block}
+.frame{background:#fff;overflow:hidden}
+
+/* title slide */
+.title .display{position:absolute;left:112px;top:110px;width:1900px;white-space:nowrap}
+.title .meta{position:absolute;left:112px;bottom:96px}
+.title .meta p{font-size:36px;line-height:1.3}
+.title .meta .who{font-stretch:75%;font-weight:700;font-size:56px;margin-bottom:12px}
+
+/* career strip */
+.strip{position:absolute;left:112px;right:112px;bottom:56px;display:flex;gap:0;border-top:2px solid var(--ink);padding-top:14px;font-size:22px}
+.strip span{flex:1;color:var(--mute);font-stretch:90%}
+.strip span.now{color:var(--signal);font-weight:700}
+.dark .strip{border-color:#4A4E50}
+.dark .strip span{color:#8B9094}
+.dark .strip span.now{color:var(--signal)}
+
+/* portfolio layout: big + 3 */
+.port{display:grid;grid-template-columns:1192px 1fr;grid-template-rows:1fr;gap:16px;position:absolute;left:112px;right:112px;top:96px;bottom:150px}
+.port .hero{grid-row:1/4}
+.port{grid-template-rows:repeat(3,1fr)}
+.port .frame{background:#000}
+.port .frame img{width:100%;height:100%;object-fit:cover;display:block}
+.head{position:absolute;left:112px;top:28px;right:112px;display:flex;align-items:baseline;gap:28px}
+.head b{font-stretch:70%;font-weight:800;font-size:46px}
+.head span{font-size:26px;color:var(--mute)}
+.dark .head span{color:#A7ABA8}
+
+/* tables / lists */
+table{border-collapse:collapse;width:100%}
+td{padding:10px 0;border-top:1px solid var(--rule);font-size:31px;vertical-align:top;line-height:1.2}
+td:first-child{font-stretch:75%;font-weight:700;width:420px;padding-right:30px}
+td em{font-style:normal;font-weight:700}
+ul{list-style:none;margin:0;padding:0}
+li{font-size:48px;line-height:1.3}
+
+/* notes panel */
+.slide.people.on{display:grid}
+.people{grid-template-columns:1fr 1fr;gap:0;padding-top:104px}
+.person{padding:0 72px;border-left:2px solid var(--ink)}
+.person:first-child{padding-left:0;border-left:0}
+.person img{width:220px;height:220px;object-fit:cover;display:block;margin-bottom:36px}
+.person .role{font-size:28px;line-height:1.3;color:var(--mute);margin:14px 0 40px}
+.credits li{font-size:31px;line-height:1.45;font-stretch:88%}
+.credits.two{display:grid;grid-template-rows:repeat(8,auto);grid-auto-flow:column;column-gap:64px;justify-content:start}
+.credits li{white-space:nowrap}
+.credits.two li{break-inside:avoid}
+.slide.degrees.on{display:grid}
+.degrees{grid-template-columns:1fr 1fr;padding-top:96px}
+.deg{border-top:6px solid var(--ink);padding-top:28px}
+.deg+.deg{margin-left:64px}
+.deg-name{font-stretch:75%;font-weight:700;font-size:56px;margin-bottom:24px}
+.tracks{font-stretch:62%;font-weight:800;font-size:178px;line-height:.92;letter-spacing:-.01em}
+.deg-foot{position:absolute;left:112px;bottom:72px;font-size:28px;color:var(--mute)}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:140px 56px;position:absolute;left:112px;right:112px;top:230px;bottom:120px;align-content:start}
+.tool{border-top:2px solid var(--ink);padding-top:22px}
+.tool.big{grid-column:span 2;border-top-width:6px}
+.tool.big .tname{font-size:150px;white-space:nowrap}
+.tname{font-stretch:62%;font-weight:800;font-size:92px;line-height:.92}
+.tdesc{font-size:30px;line-height:1.3;color:var(--mute);margin-top:18px}
+.matrix{width:100%;border-collapse:collapse;margin-top:-20px}
+.matrix th{font-stretch:75%;font-weight:700;font-size:34px;text-align:center;padding:0 0 14px;width:150px;border-bottom:4px solid var(--ink)}
+.matrix th:first-child{width:auto}
+.matrix td{font-size:40px;font-stretch:80%;font-weight:600;padding:9px 0;border-top:1px solid var(--rule);text-align:center;width:auto;vertical-align:middle;line-height:1.05}
+.matrix td:first-child{text-align:left;padding-right:24px}
+.matrix td:not(:first-child){font-size:34px}
+.matrix td small{display:block;font-size:22px;font-weight:400;font-stretch:100%;color:var(--mute);margin-top:4px}
+.matrix tr.key td{font-weight:800;font-size:46px}
+.matrix tr.key td:not(:first-child){color:var(--signal)}
+.matrix tr.grp td{font-size:24px;font-weight:500;font-stretch:100%;color:var(--mute);border-top:0;padding:26px 0 6px;text-align:left}
+.minors{position:absolute;left:112px;bottom:56px;font-size:26px;color:var(--mute)}
+.terms{position:absolute;left:112px;right:112px;top:110px;bottom:110px;display:grid;grid-template-rows:repeat(3,1fr)}
+.term{display:grid;grid-template-columns:780px 1fr;gap:64px;border-top:2px solid var(--ink);padding-top:26px}
+.tword{font-stretch:62%;font-weight:800;font-size:96px;line-height:.92}
+.tdef{font-size:34px;line-height:1.35;max-width:880px;padding-top:8px}
+.slide.numbers.on,.slide.stem.on,.slide.closer.on{display:grid}
+.numbers{grid-template-columns:820px 1fr;padding:0}
+.nimg{position:relative;overflow:hidden}
+.nimg img{width:100%;height:100%;object-fit:cover;display:block}
+.nimg span{position:absolute;left:28px;bottom:24px;color:#fff;font-size:22px;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.nstats{padding:96px 112px 80px 88px;display:flex;flex-direction:column;justify-content:center}
+.stat{border-top:2px solid var(--ink);padding:14px 0 18px;display:flex;align-items:baseline;gap:32px}
+.stat b{font-stretch:62%;font-weight:800;font-size:132px;line-height:.9;min-width:430px}
+.stat span{font-size:32px}
+.nloc{font-size:28px;color:var(--mute);margin-top:28px;line-height:1.35}
+.stem{grid-template-columns:1fr 1fr;gap:56px}
+.spimg{height:600px;overflow:hidden;margin-bottom:32px;background:#000}
+.spimg img{width:100%;height:100%;object-fit:cover;display:block}
+.sp .body{margin-top:12px;max-width:760px}
+.closer{grid-template-columns:1fr 1fr;gap:56px;align-content:start}
+.cl img{width:420px;display:block}
+.clend{position:absolute;left:112px;right:112px;bottom:80px;display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--ink);padding-top:22px}
+.alumni{position:absolute;left:1060px;right:112px;top:120px;border-top:6px solid var(--ink);padding-top:24px}
+.alumni ul{margin-top:28px}
+.alumni li{font-stretch:62%;font-weight:800;font-size:88px;line-height:1.05;white-space:nowrap}
+#notes{position:fixed;right:0;top:0;bottom:0;width:30vw;background:#111;color:#DDD;padding:24px 28px;font:18px/1.45 "Montserrat",sans-serif;overflow:auto;display:none;border-left:1px solid #333}
+#notes.on{display:block}
+#notes h4{margin:0 0 10px;color:#888;font-weight:500}
+#counter{position:fixed;left:14px;bottom:10px;color:#555;font:14px "Montserrat",sans-serif}
+.todo{display:inline-block;background:var(--signal);color:#fff;font-size:20px;padding:4px 10px;font-weight:700;font-stretch:80%}
+</style>
+<style id="scad-pass">
+@font-face{font-family:"Montserrat";src:url(fonts/montserrat.woff2) format("woff2");font-weight:100 900;font-display:swap}
+:root{--paper:#FFFFFF;--ink:#000000;--text:#333333;--mute:#6B6B6B;--rule:#DADADA;--black:#000000;
+  --ac:#3C45B8;--ab:#C3400B;--life:#0B7963;--car:#9F004E;--adm:#097EB5;--sec:var(--ac);--signal:var(--sec)}
+html,body{font-family:"Montserrat","Gotham","Century Gothic",Arial,sans-serif}
+.act-ac{--sec:var(--ac)}.act-ab{--sec:var(--ab)}.act-life{--sec:var(--life)}.act-car{--sec:var(--car)}.act-adm{--sec:var(--adm)}
+.slide{color:var(--text)}
+.slide.dark{color:#fff}
+.slide[class*="act-"]:not(.field):not(.bleed)::before{content:"";position:absolute;left:0;right:0;top:0;height:14px;background:var(--sec);z-index:2}
+.slide.field{background:var(--sec);color:#fff}
+.field .small,.field .lead,.field .body,.field p{color:#fff}
+/* type */
+.display,.t4,.tname,.tword,.tracks,.stat b,.alumni li,.head b,.cap b,.deg-name,.title .meta .who,td:first-child,.matrix td,.matrix th{font-stretch:100%}
+.display{font-weight:700;letter-spacing:-.04em;line-height:.94;color:var(--ink)}
+.field .display,.dark .display{color:#fff}
+.t1{font-size:150px}.t2{font-size:150px}.t3{font-size:104px}
+.t4{font-size:58px;font-weight:700;letter-spacing:-.025em;line-height:1.05;color:var(--ink)}
+.field .t4,.dark .t4{color:#fff}
+.lead{font-size:40px;line-height:1.3;font-weight:500;letter-spacing:-.01em}
+.body{font-size:28px;line-height:1.45}
+.small{font-size:22px;color:var(--mute)}
+/* title */
+.title .display{top:150px;font-size:168px}
+.title .meta p{font-size:30px;line-height:1.45;font-weight:500}
+.title .meta .who{font-size:44px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+/* captions + heads */
+.cap b{font-size:38px;font-weight:700;letter-spacing:-.02em}
+.cap span{font-size:24px;color:#E6E6E6;font-weight:500}
+.head{top:36px}
+.head b{font-size:38px;font-weight:700;letter-spacing:-.02em}
+.head span{font-size:24px;font-weight:500}
+/* career strip */
+.strip{font-size:20px;font-weight:500;border-top-width:2px}
+.dark .strip{border-color:#3A3A3A}
+.dark .strip span{color:#8A8A8A}
+.dark .strip span.now,.strip span.now{color:#fff;font-weight:700}
+.dark .strip span.now{box-shadow:inset 0 3px 0 var(--sec);padding-top:10px;margin-top:-13px}
+/* degree matrix */
+.matrix th{font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.matrix td{font-size:34px;font-weight:600;color:var(--ink);letter-spacing:-.015em}
+.matrix td:not(:first-child){font-size:30px;color:var(--ink)}
+.matrix td small{font-size:20px;font-weight:400;color:var(--mute);letter-spacing:0}
+.matrix tr.key td{font-weight:700;font-size:40px}
+.matrix tr.key td:not(:first-child){color:var(--sec)}
+.matrix tr.grp td{font-size:22px;font-weight:600;color:var(--sec);letter-spacing:0}
+/* tools */
+.tname{font-weight:700;letter-spacing:-.035em;line-height:1;color:var(--ink);font-size:58px}
+.tool.big .tname{font-size:104px}
+.tool.big{border-top-color:var(--sec)}
+.tdesc{font-size:26px;font-weight:500}
+/* terms */
+.term{grid-template-columns:720px 1fr}
+.tword{font-weight:700;letter-spacing:-.035em;line-height:1;font-size:68px;color:var(--ink)}
+.tdef{font-size:30px;line-height:1.45}
+/* numbers */
+.numbers .nstats{background:var(--sec);color:#fff}
+.stat{border-top-color:rgba(255,255,255,.85)}
+.stat b{font-weight:700;letter-spacing:-.04em;font-size:116px;line-height:1;min-width:520px;color:#fff}
+.stat span{font-size:28px;font-weight:500;color:#fff}
+.nloc{color:#fff;font-size:26px;font-weight:500}
+/* people */
+.person{border-left-color:var(--rule)}
+.person .role{font-size:24px;font-weight:500}
+.credits li{font-size:28px;font-weight:500;color:var(--text)}
+/* stem */
+.sp .t4{margin-top:4px}
+/* outcomes */
+.alumni{border-top-color:#fff}
+.alumni .t4{font-size:44px}
+.alumni li{font-weight:700;letter-spacing:-.03em;font-size:62px;line-height:1.14;color:#fff}
+.alumni{left:1080px}
+/* close */
+.clend{border-top-color:#fff}
+.closer .lead{font-size:34px}
+.cl img{border:16px solid #fff;box-sizing:content-box;width:380px}
+#notes{font-family:"Montserrat",sans-serif}#counter{font-family:"Montserrat",sans-serif}
+</style>
+<style id="styles">
+@font-face{font-family:"Unbounded";src:url(fonts/unbounded.woff2) format("woff2");font-weight:200 900;font-display:swap}
+@font-face{font-family:"Hanken Grotesk";src:url(fonts/hanken.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Rubik";src:url(fonts/rubik.woff2) format("woff2");font-weight:300 900;font-display:swap}
+@font-face{font-family:"Rubik Wet Paint";src:url(fonts/wetpaint.woff2) format("woff2");font-weight:400;font-display:swap}
+
+/* ================= STUDIO 2026 ================= */
+html[data-style="studio"]{--paper:#E6E7EB;--ink:#0C0D10;--text:#2A2C33;--mute:#5E626E;--rule:#C6C9D1;--black:#0C0D10;--uv:#4F2BFF;--uv-lt:#9B8CFF}
+html[data-style="studio"] .slide{--sec:var(--uv)}
+html[data-style="studio"],html[data-style="studio"] body{font-family:"Hanken Grotesk",Arial,sans-serif}
+html[data-style="studio"] :is(.display,.t4,.tname,.tword,.stat b,.alumni li,.head b,.cap b,.title .meta .who){font-family:"Unbounded",Arial,sans-serif;font-weight:600;letter-spacing:-.035em}
+html[data-style="studio"] .slide[class*="act-"]:not(.field):not(.bleed)::before{display:none}
+html[data-style="studio"] .t1,html[data-style="studio"] .title .display{font-size:150px;line-height:1.02}
+html[data-style="studio"] .t2{font-size:120px}html[data-style="studio"] .t3{font-size:84px;line-height:1.05}
+html[data-style="studio"] .t4{font-size:44px;line-height:1.12}
+html[data-style="studio"] .lead{font-size:38px;font-weight:500}
+html[data-style="studio"] .body{font-size:28px}
+html[data-style="studio"] .title .meta .who{font-size:34px}
+html[data-style="studio"] .frame,html[data-style="studio"] .spimg,html[data-style="studio"] .person img,html[data-style="studio"] .nimg{border-radius:28px;overflow:hidden}
+html[data-style="studio"] .port{gap:18px}
+html[data-style="studio"] .head b,html[data-style="studio"] .cap b{font-size:30px}
+html[data-style="studio"] .cap{padding-bottom:40px}
+html[data-style="studio"] .bleed img{border-radius:0}
+html[data-style="studio"] .tool.big .tname{font-size:74px}
+html[data-style="studio"] .tname{font-size:44px;line-height:1.1}
+html[data-style="studio"] .tool{border-top-width:3px}
+html[data-style="studio"] .tool.big{border-top:6px solid var(--uv)}
+html[data-style="studio"] .tword{font-size:48px;line-height:1.1}
+html[data-style="studio"] .term{border-top-width:3px}
+html[data-style="studio"] .matrix tr.key td:not(:first-child),html[data-style="studio"] .matrix tr.grp td{color:var(--uv)}
+html[data-style="studio"] .matrix th{border-bottom-width:6px}
+html[data-style="studio"] .numbers .nstats{background:var(--ink)}
+html[data-style="studio"] .numbers{padding:24px;gap:24px;background:var(--paper)}
+html[data-style="studio"] .numbers .nstats{border-radius:28px}
+html[data-style="studio"] .stat b{font-size:88px;color:var(--uv-lt)}
+html[data-style="studio"] .stat{border-top-color:#3A3D47}
+html[data-style="studio"] .act-car.field{background:var(--ink)}
+html[data-style="studio"] .act-car .display{color:var(--uv-lt)!important;font-size:232px!important}
+html[data-style="studio"] .alumni li{font-size:44px;line-height:1.3}
+html[data-style="studio"] .alumni .t4{font-size:30px;font-family:"Hanken Grotesk",sans-serif;letter-spacing:0;font-weight:600}
+html[data-style="studio"] .alumni{border-top:3px solid var(--uv-lt)}
+html[data-style="studio"] .dark .strip span.now{box-shadow:inset 0 3px 0 var(--uv-lt)}
+html[data-style="studio"] .cl img{border-radius:20px}
+html[data-style="studio"] .person{border-left:0}
+html[data-style="studio"] .credits li{font-size:26px}
+
+/* ================= HALLOWEEN ================= */
+html[data-style="halloween"]{--paper:#140E1C;--ink:#EFE7D6;--text:#D8CFBD;--mute:#A497B4;--rule:#3B2F4C;--black:#0A0710;--pump:#FF7518;--night:#140E1C;--slime:#9BE15D}
+html[data-style="halloween"] .slide{--sec:var(--pump)}
+html[data-style="halloween"],html[data-style="halloween"] body{font-family:"Rubik",Arial,sans-serif;background:#000}
+html[data-style="halloween"] :is(.display,.t4,.tname,.tword,.stat b,.head b,.cap b){font-family:"Rubik Wet Paint","Rubik",sans-serif;font-weight:400;letter-spacing:0}
+html[data-style="halloween"] .display{color:var(--pump)}
+html[data-style="halloween"] .t4,html[data-style="halloween"] .tname,html[data-style="halloween"] .tword{color:var(--ink)}
+html[data-style="halloween"] .title .display{font-size:158px;line-height:1.02}
+html[data-style="halloween"] .t3{font-size:110px}
+html[data-style="halloween"] .field{color:var(--night)}
+html[data-style="halloween"] .field :is(.display,.t4,.lead,.body,.small,p){color:var(--night)!important}
+html[data-style="halloween"] .act-ac.field{background:var(--night)}
+html[data-style="halloween"] .act-ac.field :is(.display){color:var(--pump)!important}
+html[data-style="halloween"] .act-ac.field :is(p,.t4){color:var(--ink)!important}
+html[data-style="halloween"] .act-car.field{background:#2A1640}
+html[data-style="halloween"] .act-car.field :is(p,li,.t4){color:var(--ink)!important}
+html[data-style="halloween"] .act-car.field .display{color:var(--pump)!important}
+html[data-style="halloween"] .alumni{border-top-color:var(--pump)}
+html[data-style="halloween"] .alumni li{color:var(--ink)}
+html[data-style="halloween"] .clend{border-top-color:var(--night)}
+html[data-style="halloween"] .numbers .nstats{background:var(--pump);color:var(--night)}
+html[data-style="halloween"] .numbers :is(.stat b,.stat span,.nloc){color:var(--night)}
+html[data-style="halloween"] .stat{border-top-color:rgba(20,14,28,.6)}
+html[data-style="halloween"] .matrix tr.key td:not(:first-child){color:var(--pump)}
+html[data-style="halloween"] .matrix tr.grp td{color:var(--slime)}
+html[data-style="halloween"] .matrix td,html[data-style="halloween"] .matrix th{color:var(--ink)}
+html[data-style="halloween"] .tool.big{border-top-color:var(--pump)}
+html[data-style="halloween"] .dark .strip span.now{color:var(--pump);box-shadow:inset 0 3px 0 var(--pump)}
+html[data-style="halloween"] .cap{background:linear-gradient(transparent,rgba(10,7,16,.9))}
+html[data-style="halloween"] .cap b{color:var(--pump);font-size:44px}
+html[data-style="halloween"] .head b{color:var(--pump);font-size:44px}
+html[data-style="halloween"] .bleed img,html[data-style="halloween"] .frame img,html[data-style="halloween"] .nimg img,html[data-style="halloween"] .spimg img{filter:saturate(.85) contrast(1.05)}
+html[data-style="halloween"] .slide:not(.bleed):not(.field)::after{content:"";position:absolute;right:0;top:0;width:300px;height:300px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300' fill='none' stroke='%23EFE7D6' stroke-width='1.6'><path d='M300 0L40 260M300 0L120 300M300 0L0 120M300 0L200 300M300 0L0 40'/><path d='M260 0q-8 30 22 40M210 0q-12 52 55 75 20 8 35 0M150 0q-15 80 80 120 40 15 70 5M90 0q-20 115 110 170 60 25 100 10M30 0q-25 150 150 225 70 30 120 15'/></svg>") no-repeat;opacity:.16;pointer-events:none}
+html[data-style="halloween"] .slide.title::after,html[data-style="halloween"] .slide.closer::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 300'><g fill='%23050308'><path d='M80 70c10-14 26-20 40-14-8 6-10 14-6 22 8-8 20-10 30-4-6 10-4 20 6 26-14 2-26-4-34-14-6 8-14 12-22 10 4-10 2-20-6-26-4 6-6 12-8 0z'/><path d='M430 40c12-16 30-22 46-16-9 7-12 16-7 25 9-9 23-12 35-5-7 12-5 23 7 30-16 2-30-5-39-16-7 9-16 14-25 12 5-12 2-23-7-30-5 7-7 14-10 0z'/><path d='M300 200c8-11 21-16 32-11-6 5-8 11-5 18 6-6 16-8 24-3-5 8-3 16 5 21-11 2-21-3-27-11-5 6-11 10-18 8 3-8 2-16-5-21-3 5-5 10-6-1z'/></g></svg>") no-repeat;background-size:900px 450px;background-position:1150px 400px;opacity:1;z-index:1;pointer-events:none;animation:batdrift 14s ease-in-out infinite alternate}
+html[data-style="halloween"] .slide.closer::after{background-position:1180px 640px;background-size:700px 350px;opacity:.85}
+html[data-style="halloween"] .slide.title{background:radial-gradient(1200px 700px at 78% 40%,#3A1E3F 0%,var(--night) 70%)}
+html[data-style="halloween"] .slide.title::before{content:"";display:block;position:absolute;left:auto;right:150px;top:450px;width:470px;height:470px;border-radius:50%;background:radial-gradient(circle at 42% 40%,#FFB25E 0%,#FF7518 55%,#C24A00 100%);box-shadow:0 0 160px 40px rgba(255,117,24,.35);z-index:0}
+html[data-style="halloween"] .slide.title > *{position:relative;z-index:1}
+html[data-style="halloween"] .slide.title .display,html[data-style="halloween"] .slide.title .meta{position:absolute}
+@keyframes batdrift{from{transform:translate(0,0)}to{transform:translate(-60px,-24px)}}
+@media (prefers-reduced-motion:reduce){html[data-style] .slide::after{animation:none!important}}
+
+/* ================= chooser ================= */
+#styler{position:fixed;right:20px;bottom:20px;z-index:50;display:none;gap:10px;background:#fff;padding:12px;box-shadow:0 6px 30px rgba(0,0,0,.35);font:600 15px "Montserrat",Arial,sans-serif;color:#000;align-items:center}
+#styler.on{display:flex}
+#styler p{margin:0 6px 0 4px;font-weight:700}
+#styler button{display:flex;align-items:center;gap:8px;border:2px solid #000;background:#fff;color:#000;font:inherit;padding:8px 12px;cursor:pointer}
+#styler button[aria-pressed="true"]{background:#000;color:#fff}
+#styler button:focus-visible{outline:3px solid #3C45B8;outline-offset:2px}
+#styler i{display:block;width:18px;height:18px;border-radius:50%}
+#toast{position:fixed;left:50%;top:24px;transform:translateX(-50%);background:#000;color:#fff;font:600 16px "Montserrat",Arial,sans-serif;padding:10px 16px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- title -->
+<section data-orig="Welcome and thanks for being here. This is SCAD — the Savannah College of Art and Design. Today I want to walk you through who we are, what our students build, and the kind of work I’ve been involved in over the years. We’ll cover our programs, our pipeline, my own portfolio, and finish with what our students are shipping right now." class="slide title on act-ac field" data-notes="Opener. Title matches the School of Creative Technology framing; the undergrad degree is game development, the grad degrees keep the interactive design and game development name.">
+  <h1 class="display t1">Game Development<br>and Creative<br>Technology</h1>
+  <div class="meta">
+    <p class="who">Tim Lindsey</p>
+    <p>Professor of interactive design and game development<br>SCAD Atlanta, SIEGE 2026</p>
+  </div>
+</section>
+
+<!-- 2 entropya -->
+<section data-orig="This is the ITGM department — Interactive Design and Game Development. The character you’re looking at is the kind of work our students aspire to: AAA-quality character art with full pipeline production. ITGM is where art, tech, design, and storytelling all meet. If you’re into making games or anything interactive, this is your home." class="slide bleed" data-notes="Entropya. Senior capstone by William Wang. SCAD style for student credit is name, degree, major; confirm his degree and major. Student work first, before anything about the program or the presenter.">
+  <img src="img/entropya.jpg" alt="">
+  <div class="cap" style="justify-content:flex-end;background:none"><span>William Wang, B.F.A. game development, senior capstone</span></div>
+</section>
+
+<!-- numbers -->
+<section class="slide numbers act-ab" data-notes="SCAD at a glance. Figures from the official About SCAD boilerplate in the SCAD editorial style guide (updated Sept. 2026). Founding year from the style guide. Photo: Poetter Hall, Savannah, from scad.edu.">
+  <div class="nimg"><img src="img/scad-poetter.jpg" alt="Poetter Hall, Savannah"><span>Poetter Hall, Savannah</span></div>
+  <div class="nstats">
+    <div class="stat"><b>1978</b><span>Founded in Savannah, Georgia</span></div>
+    <div class="stat"><b>17,000+</b><span>Students</span></div>
+    <div class="stat"><b>100+</b><span>Countries represented</span></div>
+    <div class="stat"><b>100+</b><span>Degree programs</span></div>
+    <p class="nloc">Atlanta and Savannah, Georgia; Lacoste, France; and online through SCADnow</p>
+  </div>
+</section>
+
+<!-- atlanta -->
+<section data-orig="Quick look at the SCAD Atlanta campus — the famous frog topiary out front. SCAD is consistently ranked one of the top art and design schools in the country, with campuses in Atlanta, Savannah, and online through SCADnow. We’ve got industry-grade studios, motion capture stages, and a culture built around making real, professional-quality work." class="slide dark act-life" data-notes="SCAD Atlanta. Photos from scad.edu: Midtown skyline, FORTY, the FORTY FIVE rooftop pool, and dining.">
+  <div class="head"><b>SCAD Atlanta</b><span>Midtown Atlanta</span></div>
+  <div class="port" style="bottom:96px">
+    <div class="frame hero"><img src="img/scad-atl_skyline.jpg" alt=""></div>
+    <div class="frame"><img src="img/scad-atl_forty.jpg" alt=""></div>
+    <div class="frame"><img src="img/scad-atl_pool.jpg" alt=""></div>
+    <div class="frame"><img src="img/scad-atl_dining.jpg" alt=""></div>
+  </div>
+</section>
+
+<!-- 13 beyond games -->
+<section data-orig="That wraps the portfolio walk. Now let’s talk about where these skills can take you beyond games. This image is one of SCAD’s LED virtual production volumes — the same kind of stage Disney, Netflix, and major studios use for shows like The Mandalorian. Game artists who learn Unreal are now in massive demand on film sets, because the in-camera VFX workflow uses Unreal scenes lit in real time on these LED walls. SCAD students train in these facilities directly." class="slide bleed" data-notes="LED volume. Carried over from the original slide 32. Moved here as a facilities beat. Per the SCAD style guide, LED volume stages are at the SCAD Digital Media Center in Atlanta and at Savannah Film Studios. Tim confirmed this photo is SCAD Atlanta.">
+  <img src="img/ledvolume.jpg" alt="">
+  <div class="cap"><b>Beyond games</b><span>LED volume stage, SCAD Atlanta</span></div>
+</section>
+
+<!-- 4 degrees -->
+<section class="slide act-ac" data-notes="Degrees, from scad.edu program pages checked Oct 13 2026. Undergrad game degree is now B.A./B.F.A. in game development; the M.A. and M.F.A. keep the interactive design and game development name. Applied AI and robotics are Bachelor of Design degrees. Robotics launches 2026-27. Campus notes only where a degree is not at Atlanta. The old slide's Art / Tech / Programming / Design tracks don't appear on the SCAD site.">
+  <table class="matrix">
+    <thead><tr><th></th><th>B.A.</th><th>B.F.A.</th><th>B.Des.</th><th>M.A.</th><th>M.F.A.</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="6">School of Creative Technology</td></tr>
+      <tr class="key"><td>Game development<small>M.A. and M.F.A. in interactive design and game development</small></td><td>&#9632;</td><td>&#9632;</td><td></td><td>&#9632;</td><td>&#9632;</td></tr>
+      <tr><td>Applied AI<small>Savannah</small></td><td></td><td></td><td>&#9632;</td><td></td><td></td></tr>
+      <tr><td>Robotics<small>New for 2026&ndash;27</small></td><td></td><td></td><td>&#9632;</td><td></td><td></td></tr>
+      <tr><td>Extended reality<small>Savannah</small></td><td></td><td>&#9632;</td><td></td><td></td><td></td></tr>
+      <tr><td>Themed entertainment design<small>Savannah</small></td><td></td><td>&#9632;</td><td></td><td></td><td>&#9632;</td></tr>
+      <tr class="grp"><td colspan="6">School of Animation and Motion</td></tr>
+      <tr><td>Animation</td><td></td><td>&#9632;</td><td></td><td>&#9632;</td><td>&#9632;</td></tr>
+      <tr><td>Visual effects<small>B.F.A. in visual effects and technical animation</small></td><td></td><td>&#9632;</td><td></td><td>&#9632;</td><td>&#9632;</td></tr>
+      <tr><td>Motion media design</td><td></td><td>&#9632;</td><td></td><td>&#9632;</td><td>&#9632;</td></tr>
+    </tbody>
+  </table>
+  <p class="minors">Minors include game UX, applied AI, concept art for games, technical direction, and character technical direction.</p>
+</section>
+
+<!-- stem -->
+<section data-orig="Before we dive into the games side specifically, I want to frame SCAD in the broader STEAM context — Science, Technology, Engineering, Arts, and Math. Game development sits squarely in the middle of all of these. You’re solving engineering problems, applying math, working with cutting-edge tech, and doing it all in service of art and storytelling. That blend is exactly what we train students to do." class="slide stem act-ac" data-notes="Robotics and applied AI, the two newest bachelor's degrees in the School of Creative Technology. Photos from scad.edu program pages. Robotics launches 2026-27 at Atlanta and Savannah. Applied AI program page lists Savannah; the minor is open to every major. If admission confirms STEM designation for these or game development, add one line here.">
+  <div class="sp">
+    <div class="spimg"><img src="img/scad-robotics.jpg" alt="" style="object-position:50% 30%"></div>
+    <p class="t4">Robotics</p>
+    <p class="body">B.Des. in robotics, new for 2026&ndash;27 in Atlanta and Savannah.</p>
+  </div>
+  <div class="sp">
+    <div class="spimg"><img src="img/scad-ai_summit.jpg" alt=""></div>
+    <p class="t4">Applied AI</p>
+    <p class="body">B.Des. in applied AI, plus an applied AI minor open to every major.</p>
+  </div>
+</section>
+
+<!-- 5 tools -->
+<section data-orig="Section break — let’s talk about the tools side. One of the questions families and students ask me most often is, “What software will I actually learn?” So let’s break that down honestly." class="slide act-ac" data-notes="Tools, cut to the ones a high school student has heard of. Unreal and Unity are the engines taught in the curriculum, so they get the top row. Blender is not formally taught; Tim tutors it. Full pipeline table from the old deck is gone; it's in the hidden slide if you want it back.">
+  <div class="tools">
+    <div class="tool big"><p class="tname">Unreal Engine</p><p class="tdesc">Real-time games, film, and virtual production.</p></div>
+    <div class="tool big"><p class="tname">Unity</p><p class="tdesc">Games and interactive, from mobile to console.</p></div>
+    <div class="tool"><p class="tname">Maya</p><p class="tdesc">Animation and rigging</p></div>
+    <div class="tool"><p class="tname">ZBrush</p><p class="tdesc">High-detail sculpting</p></div>
+    <div class="tool"><p class="tname">Substance Painter</p><p class="tdesc">Texturing</p></div>
+    <div class="tool"><p class="tname">Blender</p><p class="tdesc">Free modeling and rendering</p></div>
+  </div>
+</section>
+
+<!-- 18 ai terms -->
+<section class="slide act-ac" data-notes="Terminology slide. No AI headline and no product logos on purpose. Three terms, each with a plain definition and what students do with it. Confirm the ethical pipeline definition matches how the department frames it, especially the line about knowing where training data comes from.">
+  <div class="terms">
+    <div class="term">
+      <p class="tword">Ethical generative pipeline</p>
+      <p class="tdef">Generative models used as one stage in a production pipeline, not a replacement for it. You know where the training data came from, and an artist directs every step.</p>
+    </div>
+    <div class="term">
+      <p class="tword">Agentic programming</p>
+      <p class="tdef">Working with an AI agent that plans, writes, and runs code alongside you. Students learn to write the code themselves, so they can direct the agent and catch it when it's wrong.</p>
+    </div>
+    <div class="term">
+      <p class="tword">Open-source models</p>
+      <p class="tdef">Models you can download, run on your own hardware, and change. Students build their own tools on them instead of renting someone else's.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 who (new) -->
+<section data-orig="A little about who’s teaching you. That’s me on the right, and my colleague Tim on the left. Between us, we’ve worked with or shipped projects for studios and brands you absolutely know — Auburn, BYU, CCP, Xaviant, Blue Mammoth, Daz 3D, Tandem Motion Picture Studios, the University of Utah, Lowe’s, Home Depot, GE, WWE, Imagine Learning, Sybex, Google, Canon, and more. The point isn’t to brag — it’s that the people in front of the classroom have built shipped products, and we bring that experience straight into your projects." class="slide people act-ac" data-notes="Presenters. Tim and Eric, matched portraits, credits as type instead of logos. Eric's list is transcribed from the logo cluster on the old slide; confirm it reads right to him.">
+  <div class="person">
+    <img src="img/tim-2.jpg" alt="Tim Lindsey">
+    <h2 class="t4">Tim Lindsey</h2>
+    <p class="role">Professor, Interactive Design and Game Development<br>SCAD Atlanta</p>
+    <ul class="credits">
+      <li>Idol Minds</li><li>Bethesda Game Studios</li><li>CCP Games</li><li>Hi-Rez Studios</li><li>Xaviant</li><li>Blue Mammoth Games</li><li>Auburn University</li>
+    </ul>
+  </div>
+  <div class="person">
+    <img src="img/eric-2.jpg" alt="Eric Allen">
+    <h2 class="t4">Eric Allen</h2>
+    <p class="role">Chair, Interactive Design and Game Development<br>SCAD</p>
+    <ul class="credits two">
+      <li>Brigham Young University</li><li>University of Utah</li><li>Zygote</li><li>Daz 3D</li><li>Tandem Motion Picture Studios</li><li>Face Center LA</li><li>Imagine Learning</li><li>Sybex</li><li>Interact</li><li>Google</li><li>GE</li><li>Canon</li><li>WWE</li><li>Lowe's</li><li>The Home Depot</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 3 who (old, hidden) -->
+<section class="slide" data-hidden data-notes="Both presenters. Tim's cluster rebuilt from the slide 5 logos with the missing tile filled by the Bethesda logo from the Drive folder. Eric's cluster is lifted from the original slide untouched. The Art Institute of Atlanta logo was in the Drive folder and is not on this slide yet.">
+  <div class="cols c2" style="height:100%">
+    <div>
+      <div style="display:flex;gap:36px;align-items:flex-end;margin-bottom:40px">
+        <img src="img/tim.jpg" style="width:300px;height:300px;object-fit:cover;object-position:top" alt="">
+        <div><p class="t4">Tim Lindsey</p><p class="body" style="margin-top:10px">Professor, ITGM<br>SCAD Atlanta</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <img class="img frame" style="aspect-ratio:1" src="img/logo-auburn.jpg" alt="Auburn University">
+        <img class="img frame" style="aspect-ratio:1" src="img/logo-idolminds-big.jpg" alt="Idol Minds">
+        <img class="img frame" style="aspect-ratio:1;object-fit:contain;background:#000" src="img/logo-bethesda.jpg" alt="Bethesda Game Studios">
+        <img class="img frame" style="aspect-ratio:1;object-fit:contain" src="img/logo-ccp.jpg" alt="CCP Games">
+        <img class="img frame" style="aspect-ratio:1" src="img/logo-hirez-blue.jpg" alt="Hi-Rez Studios">
+        <img class="img frame" style="aspect-ratio:1" src="img/logo-xaviant.jpg" alt="Xaviant">
+        <img class="img frame" style="aspect-ratio:1" src="img/logo-bluemammoth.jpg" alt="Blue Mammoth Games">
+        <img class="img frame" style="aspect-ratio:1" src="img/logo-scad.jpg" alt="SCAD">
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;gap:36px;align-items:flex-end;margin-bottom:40px">
+        <img src="img/eric.jpg" style="width:300px;height:300px;object-fit:cover;border-radius:50%" alt="">
+        <div><p class="t4">Eric Allen</p><p class="body" style="margin-top:10px">Chair, ITGM<br>SCAD</p></div>
+      </div>
+      <img src="img/eric-logos.jpg" style="width:100%;display:block" alt="">
+    </div>
+  </div>
+</section>
+
+<!-- 7 idol minds -->
+<section class="slide dark act-ac" data-notes="Idol Minds. Cool Boarders, My Street, RallyCross. PlayStation era, 720x480 source images so they sit in a grid rather than full bleed. Add your role.">
+  <div class="head"><b>Idol Minds</b><span>Cool Boarders, My Street, RallyCross</span></div>
+  <div style="position:absolute;left:112px;right:112px;top:96px;bottom:150px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:14px">
+    <div class="frame" style="background:#000"><img class="img" src="img/im-coolboarders.jpg" alt=""></div>
+    <div class="frame" style="background:#000"><img class="img" src="img/im-mystreet.jpg" alt=""></div>
+    <div class="frame" style="background:#000"><img class="img" src="img/im-rallycross.jpg" alt=""></div>
+    <div class="frame" style="background:#000"><img class="img" src="img/im-sketch.jpg" alt=""></div>
+    <div class="frame" style="background:#000"><img class="img" src="img/im-house.jpg" alt=""></div>
+    <div class="frame" style="background:#000"><img class="img" src="img/im-snowmobile.jpg" alt=""></div>
+  </div>
+  <div class="strip"><span>Auburn</span><span class="now">Idol Minds</span><span>Bethesda</span><span>CCP Games</span><span>Hi-Rez</span><span>Xaviant</span><span>SCAD</span></div>
+</section>
+
+<!-- 8 oblivion -->
+<section class="slide dark act-ac" data-notes="The Elder Scrolls IV: Oblivion, Bethesda Game Studios. Hero is Frostcrag Spire at sunset. Smalls: the Arena, the Spire's ice cave and interior. Add your role.">
+  <div class="head"><b>The Elder Scrolls IV: Oblivion</b><span>Bethesda Game Studios</span></div>
+  <div class="port">
+    <div class="frame hero"><img src="img/oblivion-spire.jpg" alt=""></div>
+    <div class="frame"><img src="img/oblivion-arena.jpg" alt=""></div>
+    <div class="frame"><img src="img/oblivion-cave.jpg" alt=""></div>
+    <div class="frame"><img src="img/oblivion-tower-int.jpg" alt=""></div>
+  </div>
+  <div class="strip"><span>Auburn</span><span>Idol Minds</span><span class="now">Bethesda</span><span>CCP Games</span><span>Hi-Rez</span><span>Xaviant</span><span>SCAD</span></div>
+</section>
+
+<!-- 8b world of darkness -->
+<section class="slide dark act-ac" data-notes="World of Darkness, CCP Games. The MMO was cancelled in 2014 and never shipped. Add your role.">
+  <div class="head"><b>World of Darkness</b><span>CCP Games</span></div>
+  <div class="port">
+    <div class="frame hero"><img src="img/wod-key.jpg" alt=""></div>
+    <div class="frame"><img src="img/wod-1.jpg" alt=""></div>
+    <div class="frame"><img src="img/wod-2.jpg" alt=""></div>
+    <div class="frame"><img src="img/wod-3.jpg" alt=""></div>
+  </div>
+  <div class="strip"><span>Auburn</span><span>Idol Minds</span><span>Bethesda</span><span class="now">CCP Games</span><span>Hi-Rez</span><span>Xaviant</span><span>SCAD</span></div>
+</section>
+
+<!-- 9 global agenda -->
+<section class="slide dark act-ac" data-notes="Global Agenda, Hi-Rez Studios. Add your role.">
+  <div class="head"><b>Global Agenda</b><span>Hi-Rez Studios</span></div>
+  <div class="port">
+    <div class="frame hero"><img src="img/ga-1.jpg" alt=""></div>
+    <div class="frame"><img src="img/ga-2.jpg" alt=""></div>
+    <div class="frame"><img src="img/ga-3.jpg" alt=""></div>
+    <div class="frame"><img src="img/ga-4.jpg" alt=""></div>
+  </div>
+  <div class="strip"><span>Auburn</span><span>Idol Minds</span><span>Bethesda</span><span>CCP Games</span><span class="now">Hi-Rez</span><span>Xaviant</span><span>SCAD</span></div>
+</section>
+
+<!-- 10 battlemage -->
+<section class="slide dark" data-hidden data-notes="Lichdom: Battlemage, Xaviant. Add your role.">
+  <div class="head"><b>Lichdom: Battlemage</b><span>Xaviant</span></div>
+  <div class="port">
+    <div class="frame hero"><img src="img/battlemage-1.jpg" alt=""></div>
+    <div class="frame"><img src="img/battlemage-2.jpg" alt=""></div>
+    <div class="frame"><img src="img/battlemage-3.jpg" alt=""></div>
+    <div class="frame"><img src="img/battlemage-4.jpg" alt=""></div>
+  </div>
+  <div class="strip"><span>Auburn</span><span>Idol Minds</span><span>Bethesda</span><span>CCP Games</span><span>Hi-Rez</span><span class="now">Xaviant</span><span>SCAD</span></div>
+</section>
+
+<!-- 11 culling -->
+<section class="slide dark act-ac" data-notes="The Culling, Xaviant. Add your role.">
+  <div class="head"><b>The Culling</b><span>Xaviant</span></div>
+  <div class="port">
+    <div class="frame hero"><img src="img/culling-1.jpg" alt=""></div>
+    <div class="frame"><img src="img/culling-2.jpg" alt=""></div>
+    <div class="frame"><img src="img/culling-3.jpg" alt=""></div>
+    <div class="frame"><img src="img/culling-4.jpg" alt=""></div>
+  </div>
+  <div class="strip"><span>Auburn</span><span>Idol Minds</span><span>Bethesda</span><span>CCP Games</span><span>Hi-Rez</span><span class="now">Xaviant</span><span>SCAD</span></div>
+</section>
+
+<!-- 12 minerva -->
+<section class="slide dark" data-hidden data-notes="Don't Die, Minerva!, Xaviant. Add your role.">
+  <div class="head"><b>Don't Die, Minerva!</b><span>Xaviant</span></div>
+  <div class="port">
+    <div class="frame hero"><img src="img/minerva-key.jpg" alt=""></div>
+    <div class="frame"><img src="img/minerva-1.jpg" alt=""></div>
+    <div class="frame"><img src="img/minerva-2.jpg" alt=""></div>
+    <div class="frame"><img src="img/minerva-3.jpg" alt=""></div>
+  </div>
+  <div class="strip"><span>Auburn</span><span>Idol Minds</span><span>Bethesda</span><span>CCP Games</span><span>Hi-Rez</span><span class="now">Xaviant</span><span>SCAD</span></div>
+</section>
+
+<!-- overgrown -->
+<section class="slide bleed" data-notes="Overgrown, game development student work, 2026. Image from the scad.edu interactive design and game development page. Get the team names for the credit line.">
+  <img src="img/scad-game_overgrown.jpg" alt="">
+  <div class="cap"><b>Overgrown</b><span>B.F.A. game development students, 2026</span></div>
+</section>
+
+<!-- 14 student clip 1 -->
+<section data-orig="This piece is one of my favorites — a stylized fantasy scene with this draped robed figure holding a glowing artifact, framed against a circular window of sky. The lighting is doing tremendous narrative work here. Watch how the warm rim light on the cloth fights against the cool ambient light coming through the window. Character work, environment work, and lighting all in one student project." class="slide bleed" data-notes="Student work. Still from the clip on original slide 36. The video itself needs to be dropped in as an mp4 to play here. Credit set to B.F.A. game development per Tim.">
+  <img src="img/student-clip-1.jpg" alt="">
+  <div class="cap"><b>Student work</b><span>B.F.A. game development</span></div>
+</section>
+
+<!-- 15 student clip 2 -->
+<section data-orig="First clip: a stylized first-person shooter built by SCAD students. Notice the bold low-poly cave geometry, the saturated magenta and teal palette, and the chunky weapon model. This is a great example of choosing an art style that matches your team’s scope — you don’t have to chase photoreal to make something that looks intentional and ships well. Play the video to give it about 20 seconds." class="slide bleed" data-notes="Student work. Still from the clip on original slide 34. Credit set to B.F.A. game development per Tim.">
+  <img src="img/student-clip-2.jpg" alt="">
+  <div class="cap"><b>Student work</b><span>B.F.A. game development</span></div>
+</section>
+
+<!-- 16 battery jam -->
+<section data-orig="And here’s something on the totally different end of the tonal spectrum — Battery Jam, a chaotic isometric party game with this candy-bright tiled arena, big scoreboard, and goofy characters knocking each other around. Couch-coop, family-friendly, deeply silly. Proof that student teams ship across the entire range, from stylized horror to bright party games." class="slide bleed" data-notes="Battery Jam. Student team game, shipped.">
+  <img src="img/batteryjam.jpg" alt="">
+  <div class="cap"><b>Battery Jam</b><span>B.F.A. game development student team</span></div>
+</section>
+
+<!-- 17 games wall -->
+<section data-orig="And here’s the broader portfolio of games that have come out of our program: Tales of the Tavern, Skystrider, Epochrypha, Mind the Abyss, Scour, Battery Jam, Zoelie, Awake, and Cardboard Hero. Different genres, different art styles, different team sizes — all shipped, all playable, many with awards and press behind them. This wall is the answer when people ask “what will I actually leave with?” You’ll leave with a portfolio that looks like this one." class="slide act-ac" data-notes="Student games wall, carried over from original slide 40.">
+  <h2 class="display t3" style="margin-bottom:40px">Student games</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    <img class="img" style="aspect-ratio:2.13" src="img/game-1.jpg" alt=""><img class="img" style="aspect-ratio:2.13" src="img/game-2.jpg" alt=""><img class="img" style="aspect-ratio:2.13" src="img/game-3.jpg" alt="">
+    <img class="img" style="aspect-ratio:2.13" src="img/game-4.jpg" alt=""><img class="img" style="aspect-ratio:2.13" src="img/game-5.jpg" alt=""><img class="img" style="aspect-ratio:2.13" src="img/game-6.jpg" alt="">
+    <img class="img" style="aspect-ratio:2.13" src="img/game-7.jpg" alt=""><img class="img" style="aspect-ratio:2.13" src="img/game-8.jpg" alt=""><img class="img" style="aspect-ratio:2.13" src="img/game-9.jpg" alt="">
+  </div>
+</section>
+
+<!-- outcomes -->
+<section class="slide act-car field" data-notes="Outcomes. Wording follows the official About SCAD boilerplate: a 2026 study, 99% employed, pursuing further education, or both within 12 months. Alumni studios per Tim: Epic Games, Hi-Rez, Blue Mammoth, Dekogon.">
+  <p class="display" style="font-size:300px;line-height:.9;margin-top:40px">99%</p>
+  <p class="lead" style="max-width:860px;margin-top:36px">of recent SCAD graduates were employed, pursuing further education, or both within 12 months of graduation.</p>
+  <p class="small" style="margin-top:16px">2026 SCAD study</p>
+  <div class="alumni">
+    <p class="t4">Our alumni work at</p>
+    <ul><li>Epic Games</li><li>Hi-Rez Studios</li><li>Blue Mammoth Games</li><li>Dekogon Studios</li></ul>
+  </div>
+  <p class="body" style="position:absolute;left:112px;bottom:96px;max-width:860px">Students take on real-world assignments with corporate partners through SCADpro, the university's research and design studio.</p>
+</section>
+
+<!-- close -->
+<section data-orig="If you want to come experience this in person, SCADday is our open house program. You’ll meet faculty, tour the studios and labs, see student work up close, sit in on demos, and get a feel for the culture. It’s the single best way to figure out if SCAD is the right fit for you.
+
+Two QR codes for the next step. The one on the left takes you to SCADday signup so you can book a visit. The one on the right gets you straight to Admissions if you’re ready to talk applications, portfolio review, or scholarships. Take a second to scan whichever one fits where you are right now — there’s no wrong door.
+
+And that’s SCAD.EDU — thanks for the time. I’m happy to take any questions: about the program, the pipeline, the portfolio work, admissions, scholarships, day-in-the-life stuff, whatever you need. The floor is yours." class="slide closer act-adm field" data-notes="Close. SCAD Day is Saturday, Nov. 14, 2026. QR codes verified by Tim. Per SCAD style it's admission, not admissions. Point people to the SCAD table at the college fair.">
+  <div class="cl">
+    <p class="t4">SCAD Day</p>
+    <p class="lead" style="margin:10px 0 32px">Saturday, Nov. 14, 2026</p>
+    <img src="img/qr-scadday.jpg" alt="">
+  </div>
+  <div class="cl">
+    <p class="t4">Contact admission</p>
+    <p class="lead" style="margin:10px 0 32px">admission@scad.edu</p>
+    <img src="img/qr-admissions.jpg" alt="">
+  </div>
+  <div class="clend">
+    <p class="display t3">scad.edu</p>
+    <p class="body">Find us at the SCAD table at the college fair.</p>
+  </div>
+</section>
+
+<!-- 5 pipeline (old, hidden) -->
+<section class="slide" data-hidden data-notes="Rebuilt from the hand-circled icon slide. Same stages and tools as the original, as a readable table. Bold marks the SCAD default of Blender and Unreal. Check the tool lists for anything stale (TopoGun, headus, Mudbox).">
+  <h2 class="display t3" style="margin-bottom:40px">The asset pipeline</h2>
+  <table>
+    <tr><td>Model low res</td><td>Maya, modo, 3ds Max, Houdini, <em>Blender</em></td></tr>
+    <tr><td>High detail sculpt</td><td>ZBrush, Mudbox, Maya, Substance Painter, <em>Blender</em></td></tr>
+    <tr><td>Sculpt</td><td>ZBrush, <em>Blender</em></td></tr>
+    <tr><td>Retopo</td><td>Maya, 3DCoat, TopoGun</td></tr>
+    <tr><td>UVs</td><td>Maya, modo, headus, Substance Painter, ZBrush</td></tr>
+    <tr><td>Project maps</td><td><em>Blender</em>, Marmoset Toolbag, Substance Painter, ZBrush</td></tr>
+    <tr><td>Material</td><td>Maya, <em>Blender</em></td></tr>
+    <tr><td>Painting, stylized</td><td>3DCoat</td></tr>
+    <tr><td>Painting, PBR</td><td>Substance Painter, ZBrush, <em>Blender</em></td></tr>
+    <tr><td>Rigging and animation</td><td>Maya, <em>Blender</em></td></tr>
+    <tr><td>Shaders</td><td><em>Unreal Engine</em>, Unity</td></tr>
+    <tr><td>Dynamic</td><td><em>Unreal Engine</em>, Unity</td></tr>
+    <tr><td>Web</td><td>Sketchfab, Marmoset Viewer</td></tr>
+  </table>
+</section>
+
+<!-- 6 career strip intro -->
+<section class="slide" data-hidden data-notes="Section opener for Tim's work. Studios in order. CCP and Blue Mammoth have no images in the Drive folder, so they appear here and on the strip but have no slide of their own. Add years if you want them shown.">
+  <h2 class="display t2" style="margin-bottom:80px">Studios<br>and titles</h2>
+  <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:14px;align-items:center">
+    <img class="img frame" style="aspect-ratio:1;object-fit:contain;padding:14px" src="img/logo-auburn.jpg" alt="Auburn">
+    <img class="img frame" style="aspect-ratio:1;object-fit:contain;padding:14px" src="img/logo-idolminds-big.jpg" alt="Idol Minds">
+    <img class="img frame" style="aspect-ratio:1;object-fit:contain;background:#000" src="img/logo-bethesda.jpg" alt="Bethesda">
+    <img class="img frame" style="aspect-ratio:1;object-fit:contain;padding:14px" src="img/logo-ccp.jpg" alt="CCP">
+    <img class="img frame" style="aspect-ratio:1;object-fit:cover" src="img/logo-hirez-blue.jpg" alt="Hi-Rez">
+    <img class="img frame" style="aspect-ratio:1;object-fit:cover" src="img/logo-xaviant.jpg" alt="Xaviant">
+    <img class="img frame" style="aspect-ratio:1;object-fit:cover" src="img/logo-bluemammoth.jpg" alt="Blue Mammoth">
+    <img class="img frame" style="aspect-ratio:1;object-fit:contain;padding:14px" src="img/logo-scad.jpg" alt="SCAD">
+  </div>
+  <div class="strip" style="position:static;margin-top:16px;border:0;padding:0">
+    <span>Auburn</span><span>Idol Minds</span><span>Bethesda</span><span>CCP Games</span><span>Hi-Rez</span><span>Xaviant</span><span>Blue Mammoth</span><span class="now">SCAD</span>
+  </div>
+</section>
+
+</div>
+<aside id="notes"><h4>Notes</h4><div id="ntext"></div></aside>
+<div id="counter"></div>
+<div id="styler" role="group" aria-label="Deck style"><p>Style</p>
+ <button data-s="scad"><i style="background:#3C45B8"></i>SCAD</button>
+ <button data-s="studio"><i style="background:#4F2BFF;border-radius:4px"></i>Studio 2026</button>
+ <button data-s="halloween"><i style="background:#FF7518"></i>Halloween</button></div>
+<div id="toast"></div>
+
+<script>
+const ALL=[...document.querySelectorAll('.slide')];
+const slides=ALL.filter(x=>!x.hasAttribute('data-hidden'));
+const KEY='siege26-speaker-';
+ALL.forEach((x,k)=>{x.dataset.k=k;try{const v=localStorage.getItem(KEY+k);if(v!==null)x.dataset.speaker=v}catch(e){}});
+let i=Math.max(0,Math.min(slides.length-1,(parseInt(location.hash.slice(1))||1)-1));
+let pres=null,t0=null,acc=0,running=false;
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);const st=document.getElementById('stage');st.style.left='50%';st.style.top='50%';st.style.marginLeft='-960px';st.style.marginTop='-540px';st.style.transformOrigin='center';st.style.transform=`scale(${s})`;}
+function show(n){i=(n+slides.length)%slides.length;slides.forEach((s,k)=>s.classList.toggle('on',k===i));history.replaceState(null,'','#'+(i+1));
+  const sp=slides[i].dataset.speaker||'';document.getElementById('ntext').innerHTML='';const a=document.createElement('p');a.textContent=sp||'No speaker notes yet.';a.style.fontSize='22px';const b=document.createElement('p');b.textContent=slides[i].dataset.notes||'';b.style.color='#888';b.style.fontSize='15px';document.getElementById('ntext').append(a,b);
+  document.getElementById('counter').textContent=`${i+1} / ${slides.length}`;renderPres();}
+function keys(e){
+  if(e.target&&e.target.isContentEditable)return;
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();show(i+1)}
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();show(i-1)}
+  else if(e.key==='Home')show(0);else if(e.key==='End')show(slides.length-1);
+  else if(e.key==='n'||e.key==='N')document.getElementById('notes').classList.toggle('on');
+  else if(e.key==='p'||e.key==='P')openPres();
+  else if(e.key==='s'||e.key==='S'){document.getElementById('styler').classList.toggle('on')}
+  else if(e.key==='Escape'){document.getElementById('styler').classList.remove('on')}
+  else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
+}
+addEventListener('keydown',keys);
+addEventListener('click',e=>{if(e.target.closest('#notes')||e.target.closest('#styler'))return;show(e.clientX>innerWidth/3?i+1:i-1)});
+addEventListener('resize',fit);
+addEventListener('hashchange',()=>{const h=parseInt(location.hash.slice(1))-1;if(h>=0&&h<slides.length&&h!==i)show(h)});
+
+/* ---------- presenter view ---------- */
+function thumb(box,slide){box.innerHTML='';if(!slide){return}
+  const w=box.clientWidth,h=box.clientHeight,s=Math.min(w/1920,h/1080);
+  const wrap=box.ownerDocument.createElement('div');wrap.style.cssText=`position:absolute;left:${(w-1920*s)/2}px;top:${(h-1080*s)/2}px;width:1920px;height:1080px;transform:scale(${s});transform-origin:0 0;overflow:hidden`;
+  const c=slide.cloneNode(true);c.classList.add('on');c.removeAttribute('data-hidden');wrap.appendChild(c);box.appendChild(wrap);}
+function fmt(ms){const t=Math.floor(ms/1000),m=Math.floor(t/60),x=t%60;return m+':'+String(x).padStart(2,'0')}
+function elapsed(){return acc+(running?Date.now()-t0:0)}
+function openPres(){
+  if(pres&&!pres.closed){pres.focus();return}
+  pres=window.open('','siege-presenter','width=1400,height=900');
+  if(!pres){alert('Allow pop-ups for this page to use presenter view.');return}
+  const css=[...document.querySelectorAll('style')].map(x=>x.textContent).join('\n');
+  pres.document.open();
+  pres.document.write(`<!doctype html><html><head><meta charset="utf-8"><base href="${location.href.split('#')[0]}"><title>Presenter view</title><style>${css}
+html,body{overflow:auto;height:auto}
+.pv{--paper:#fff;--ink:#000;--mute:#666;background:#fff;color:#000;font-family:Montserrat,sans-serif!important;display:grid;grid-template-columns:1.65fr 1fr;grid-template-rows:auto 1fr auto;gap:18px;padding:18px;height:100vh;box-sizing:border-box;font-family:"Montserrat",sans-serif}
+.pv-bar{grid-column:1/3;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pv-bar button{font:600 15px "Montserrat",sans-serif;background:var(--ink);color:var(--paper);border:0;padding:9px 14px;cursor:pointer}
+.pv-bar button.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.pv-bar button:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.pv-count{font-stretch:75%;font-weight:700;font-size:28px;margin-right:12px}
+.pv-saved{font-size:14px;color:var(--mute);margin-left:auto}
+.pv-cur{position:relative;background:#000;min-height:0}
+.pv-side{display:grid;grid-template-rows:auto 1fr;gap:14px;min-height:0}
+.pv-next{position:relative;background:#000;aspect-ratio:16/9}
+.pv-lbl{font-size:13px;color:var(--mute);margin:0 0 4px}
+.pv-time{border-top:4px solid var(--ink);padding-top:10px}
+.pv-time b{display:block;font-stretch:62%;font-weight:800;font-size:96px;line-height:.95}
+.pv-time span{font-size:20px;color:var(--mute)}
+.pv-notes{grid-column:1/3;display:grid;grid-template-columns:1fr 440px;gap:18px;max-height:34vh;min-height:0}
+.pv-sp{font-size:26px;line-height:1.4;background:#fff;padding:14px 18px;overflow:auto;outline:none;border:2px solid var(--ink);min-height:120px}
+.pv-sp:empty:before{content:'Click here and type what you want to say on this slide. It saves as you type.';color:var(--mute)}
+.pv-bn{font-size:15px;line-height:1.45;color:var(--mute);overflow:auto}
+</style></head><body>
+<div class="pv">
+ <div class="pv-bar"><span class="pv-count" id="cnt"></span>
+  <button id="bp">Previous</button><button id="bn">Next</button>
+  <button class="ghost" id="bt">Start timer</button><button class="ghost" id="br">Reset timer</button>
+  <label style="font:600 15px Montserrat,sans-serif">Style <select id="sty" style="font:600 15px Montserrat,sans-serif;padding:7px"><option value="scad">SCAD</option><option value="studio">Studio 2026</option><option value="halloween">Halloween</option></select></label>
+  <button class="ghost" id="bh">Notes handout</button><button class="ghost" id="bs">Save deck with notes</button>
+  <span class="pv-saved" id="saved"></span></div>
+ <div class="pv-cur" id="cur"></div>
+ <div class="pv-side"><div><p class="pv-lbl">Next</p><div class="pv-next" id="nxt"></div></div>
+  <div class="pv-time"><b id="tm">0:00</b><span id="clk"></span></div></div>
+ <div class="pv-notes"><div><p class="pv-lbl">Speaker notes</p><div class="pv-sp" id="sp" contenteditable="true"></div></div>
+  <div style="overflow:auto"><p class="pv-lbl">Build notes</p><div class="pv-bn" id="bnote"></div><p class="pv-lbl" style="margin-top:14px">From the original deck</p><div class="pv-bn" id="onote" style="white-space:pre-wrap"></div></div></div>
+</div></body></html>`);
+  pres.document.close();
+  const d=pres.document,$=id=>d.getElementById(id);
+  $('bp').onclick=()=>show(i-1);$('bn').onclick=()=>show(i+1);
+  $('bt').onclick=()=>{if(running){acc+=Date.now()-t0;running=false}else{t0=Date.now();running=true}renderPres()};
+  $('br').onclick=()=>{acc=0;t0=Date.now();running=false;renderPres()};
+  $('bh').onclick=handout;$('sty').onchange=e=>setStyle(e.target.value);$('bs').onclick=saveDeck;
+  $('sp').addEventListener('input',()=>{const v=$('sp').innerText.trim();slides[i].dataset.speaker=v;try{localStorage.setItem(KEY+slides[i].dataset.k,v);$('saved').textContent='Saved in this browser. Use Save deck with notes to keep them in the file.'}catch(e){$('saved').textContent='Browser storage is off. Use Save deck with notes before closing.'}});
+  pres.addEventListener('keydown',keys);
+  pres.addEventListener('resize',renderPres);
+  clearInterval(window._tick);window._tick=setInterval(()=>{if(pres&&!pres.closed){pres.document.getElementById('tm').textContent=fmt(elapsed());pres.document.getElementById('clk').textContent=new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}},500);
+  setTimeout(renderPres,50);
+}
+function renderPres(){
+  if(!pres||pres.closed)return;const d=pres.document,$=id=>d.getElementById(id);if(!$('cur'))return;
+  $('cnt').textContent=`${i+1} / ${slides.length}`;const ds=curStyle();if(ds==='scad')d.documentElement.removeAttribute('data-style');else d.documentElement.dataset.style=ds;$('sty').value=ds;
+  thumb($('cur'),slides[i]);thumb($('nxt'),slides[i+1]);
+  if(d.activeElement!==$('sp'))$('sp').innerText=slides[i].dataset.speaker||'';
+  $('bnote').textContent=slides[i].dataset.notes||'';$('onote').textContent=slides[i].dataset.orig||'None for this slide.';
+  $('bt').textContent=running?'Pause timer':(acc?'Resume timer':'Start timer');
+  $('tm').textContent=fmt(elapsed());
+}
+function saveDeck(){
+  const root=document.documentElement.cloneNode(true);
+  root.querySelectorAll('.slide').forEach(x=>{x.classList.remove('on');const src=ALL[+x.dataset.k];if(src&&src.dataset.speaker)x.setAttribute('data-speaker',src.dataset.speaker);x.removeAttribute('data-k')});
+  const first=root.querySelector('.slide:not([data-hidden])');if(first)first.classList.add('on');
+  const st=root.querySelector('#stage');if(st)st.removeAttribute('style');
+  const nt=root.querySelector('#notes');if(nt)nt.classList.remove('on');root.removeAttribute('data-style');const sy=root.querySelector('#styler');if(sy)sy.classList.remove('on');
+  const html='<!doctype html>\n'+root.outerHTML;
+  const name=(decodeURIComponent(location.pathname.split('/').pop())||'index.html');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=name;document.body.appendChild(a);a.click();a.remove();
+  if(pres&&!pres.closed)pres.document.getElementById('saved').textContent='Downloaded '+name+'. Replace your deck file with it.';
+}
+function handout(){
+  const w=window.open('','siege-handout','width=900,height=1000');if(!w)return;
+  const css=[...document.querySelectorAll('style')].map(x=>x.textContent).join('\n');
+  w.document.open();w.document.write(`<!doctype html><html><head><meta charset="utf-8"><base href="${location.href.split('#')[0]}"><title>Speaker notes</title><style>${css}
+html,body{overflow:auto;background:#fff;height:auto}body{padding:32px;font-family:"Montserrat",sans-serif}
+.row{display:grid;grid-template-columns:320px 1fr;gap:24px;border-top:2px solid #121416;padding:16px 0;break-inside:avoid}
+.th{position:relative;width:320px;height:180px;background:#000}.n{font-size:17px;line-height:1.45;white-space:pre-wrap}.n small{display:block;color:#5F6468;font-size:12px;margin-top:8px}
+h1{font-stretch:75%;font-size:32px;margin:0 0 16px}
+@media print{body{padding:0}}</style></head><body><h1>SIEGE 2026 speaker notes</h1><div id="L"></div></body></html>`);w.document.close();
+  if(curStyle()!=='scad')w.document.documentElement.dataset.style=curStyle();
+  slides.forEach((s,k)=>{const r=w.document.createElement('div');r.className='row';const th=w.document.createElement('div');th.className='th';const n=w.document.createElement('div');n.className='n';n.textContent=(k+1)+'.  '+(s.dataset.speaker||'(no speaker notes)');r.append(th,n);w.document.getElementById('L').appendChild(r);thumb(th,s)});
+}
+
+/* ---------- styles ---------- */
+const STYLES={scad:'SCAD',studio:'Studio 2026',halloween:'Halloween'};
+function setStyle(k,quiet){if(!STYLES[k])k='scad';if(k==='scad')document.documentElement.removeAttribute('data-style');else document.documentElement.dataset.style=k;
+  try{localStorage.setItem('siege26-style',k)}catch(e){}
+  document.querySelectorAll('#styler button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===k));
+  if(!quiet){const t=document.getElementById('toast');t.textContent='Style: '+STYLES[k];t.classList.add('on');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('on'),1400)}
+  renderPres();}
+function curStyle(){return document.documentElement.dataset.style||'scad'}
+document.querySelectorAll('#styler button').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();setStyle(b.dataset.s)}));
+document.getElementById('styler').addEventListener('click',e=>e.stopPropagation());
+(function(){let k=new URLSearchParams(location.search).get('style');if(!k){try{k=localStorage.getItem('siege26-style')}catch(e){}}setStyle(k||'scad',true)})();
+
+/* ---------- touch: swipe to advance ---------- */
+let tx=null,ty=null;
+addEventListener('touchstart',e=>{if(e.target.closest('#styler'))return;tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;tx=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){e.preventDefault();show(dx<0?i+1:i-1)}else if(Math.abs(dy)>80&&dy<0){document.getElementById('styler').classList.toggle('on')}},{passive:false});
+addEventListener('beforeunload',()=>{if(pres&&!pres.closed)pres.close()});
+fit();show(i);
+</script>
+</body>
+</html>
