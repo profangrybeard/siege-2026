@@ -28,3 +28,9 @@ Open presenter view with P and type in the speaker notes box. Notes save in that
 - `index.html` is the deck. Each `<section class="slide">` is one slide; `data-hidden` slides are skipped.
 - `img/` and `fonts/` are used by `index.html`.
 - `SIEGE-2026-SCAD-offline.html` is the same deck as a single self-contained file. Rebuild it after editing `index.html`.
+
+## License
+
+Copyright (c) 2026 Tim Lindsey. Text and original slides are licensed [CC BY-NC-SA 4.0](LICENSE). You can share and adapt them for non-commercial use, with credit, under the same license.
+
+Student work, SCAD names and logos, and third-party images in the deck belong to their owners and are not covered by this license.
